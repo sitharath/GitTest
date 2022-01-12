@@ -1,0 +1,81 @@
+SqlConnection con =new SqlConnetion("Datasource=*,Initial Catalog=,User Id=,Password=,");
+
+string InsertData(int ID){
+	SqlCommand cmd=new SqlCommand("Insert into tbl (id) VALUSES(@Id)",con);
+	con.open();
+	cmd.parameter.AddWithValue("@Id",Id);
+	cmd.executenonquery();
+	con.close();
+	return "Data have been saved";
+}
+string UpdateData(int ID){
+	SqlCommand cmd=new SqlCommand("StoreProcessdure",con);
+	cmd.CommandType=CommandType.StoreProcessdure;
+	cmd.parameter.Add("@Id",SqlDbType.int);
+	cmd.parameter["@Id"].value=Id;
+	cmd.executenonquery();
+}
+List<User> GetData(){
+	DCUser DCUser=new DCUser();
+	list<User> ls=new List<User>();
+	SqlCommand cmd=new SqlCommand("StoreProcessdure",con);
+	cmd.CommandType=CommandType.StoreProcessdure;
+	cmd.parameter.Add("@Id",SqlDbType.int);
+	cmd.parameter["@Id"].value=id;
+	SqlDataReader Reader=cmd.executeReader();
+	while(Reader.read(){
+		DCUser=new DCUser(
+			Id=Reader.GetInt(Reader.getOrdinal("Int")),
+			Name=Reader.GetString(Reader.getOrdinal("Name"))
+		)
+		ls.Add(DCUser);
+	return ls.Tolist();
+	})
+}
+
+public string getCreatePDF(string Department, string Location, string TestDate)
+        {
+            var Printby = Session["Em_Lastname"].ToString();
+            var PathReport = Path.Combine(Server.MapPath("~/Report"), "ListDailyRapidInformation.rdlc");
+            var PathReportPDF = Path.Combine(Server.MapPath("~/Report"), "ListRapidTestInformation.pdf");
+            var CovidInfo = FN.FNGetCovidInformation("", "", Location, Department, TestDate, Printby, "Y");
+                LocalReport localReport = new LocalReport();
+                localReport.ReportPath = PathReport;
+                ReportDataSource rds1 = new ReportDataSource("DSCovidInfo", CovidInfo.ToList());
+                localReport.DataSources.Add(rds1);
+                string reportType = "PDF";
+                string mimeType = "", encoding, fileNameExtension = "";
+                //The DeviceInfo settings should be changed based on the reportType                
+                string deviceInfo =
+                "<DeviceInfo>" +
+                "  <OutputFormat>PDF</OutputFormat>" +
+                "  <PageWidth>21cm</PageWidth>" +
+                "  <PageHeight>29.7cm</PageHeight>" +
+                "  <MarginTop>0.5cm</MarginTop>" +
+                "  <MarginLeft>0.2cm</MarginLeft>" +
+                "  <MarginRight>0.2cm</MarginRight>" +
+                "  <MarginBottom>0.3cm</MarginBottom>" +
+                "</DeviceInfo>";
+                Warning[] warnings;
+                string[] streams;
+                byte[] renderedBytes;
+
+                //Render the report
+                renderedBytes = localReport.Render(
+                    reportType,
+                    deviceInfo,
+                    out mimeType,
+                    out encoding,
+                    out fileNameExtension,
+                    out streams,
+                    out warnings);
+                FileStream fs = new FileStream(PathReportPDF, FileMode.OpenOrCreate);
+                byte[] data = new byte[fs.Length];
+                fs.Write(renderedBytes, 0, renderedBytes.Length);
+                fs.Close();
+            }
+            return PathReportPDF;
+        }
+
+Planing Analyze Design Coding Testing implement Maintaince
+
